@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:test_project/product_presentation/product_model.dart';
-import 'package:test_project/product_presentation/product_view/widgets/back_button_widget.dart';
-import 'package:test_project/product_presentation/product_view/widgets/cart_notif_widget.dart';
-import 'package:test_project/product_presentation/product_view/widgets/image_reader_widget.dart';
-import 'package:test_project/product_presentation/product_view/widgets/view_image_btn.dart';
 
-import 'widgets/product_veiew_widget.dart';
+import 'product_view_widgets.dart';
 
 class ProductPageContent extends StatefulWidget {
 
@@ -21,9 +17,18 @@ class _ProductPageContentState extends State<ProductPageContent> {
  late ScrollController scrollController;
  late CarouselController  carouselController;
  late bool shouldHideActionBtns;
+ late int curentPage;
  @override
   void initState() {
-   carouselController = CarouselController( initialItem: 0);
+   curentPage = 0;
+   carouselController = CarouselController( initialItem: 0)..addListener((){
+
+     print('carouselController.offset');
+     //print(carouselController.offset);
+   setState(() {
+     curentPage=(carouselController.offset/MediaQuery.of(context).size.width).ceil();
+   });
+   });
    shouldHideActionBtns=false;
    scrollController= ScrollController(initialScrollOffset: 0.0);
    super.initState();
@@ -65,45 +70,56 @@ class _ProductPageContentState extends State<ProductPageContent> {
             floating: true,
             expandedHeight: deviceWidth,
             collapsedHeight: deviceWidth*.6,
-            flexibleSpace: CarouselView(
-              onTap: (imageIndex){
-
-              },
-              controller: carouselController,
-              padding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),),
-              itemSnapping: true,
-              scrollDirection: Axis.horizontal,
-              shrinkExtent: deviceWidth,
-              itemExtent: deviceWidth,
+            flexibleSpace: Stack(
+              alignment: Alignment.center,
               children: [
-                ... (pTest?.images ?? []).isNotEmpty ? pTest!.images.map((
-                    el) =>
-                    ImageReaderWidget(
-                      onImageErrorHideActionCallBack: (val){
-                        WidgetsBinding.instance.addPostFrameCallback((_){
-                          setState(() {
-                            shouldHideActionBtns=val;
-                          });
-                        });
-                      },
+                CarouselView(
+                  onTap: (imageIndex){
+
+                  },
+                  controller: carouselController,
+                  padding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),),
+                  itemSnapping: true,
+                  scrollDirection: Axis.horizontal,
+                  shrinkExtent: deviceWidth,
+                  itemExtent: deviceWidth,
+                  children: [
+                    ... (pTest?.images ?? []).isNotEmpty ? pTest!.images.map((
+                        el) =>
+                        ImageReaderWidget(
+                          onImageErrorHideActionCallBack: (val){
+                            WidgetsBinding.instance.addPostFrameCallback((_){
+                              setState(() {
+                                shouldHideActionBtns=val;
+                              });
+                            });
+                          },
+                          fit: BoxFit.cover,
+                          width: deviceWidth,
+                          height: deviceWidth * .6,
+                          employ404image: true,
+                          imageUrl: el,
+                        )).toList() : [
+                          ImageReaderWidget(
                       fit: BoxFit.cover,
                       width: deviceWidth,
                       height: deviceWidth * .6,
                       employ404image: true,
-                      imageUrl: el,
-                    )).toList() : [
-                      ImageReaderWidget(
-                  fit: BoxFit.cover,
-                  width: deviceWidth,
-                  height: deviceWidth * .6,
-                  employ404image: true,
-                  imageUrl: '--',
-                )
-                ],
-              ],
+                      imageUrl: '--',
+                    )
+                    ],
+                  ],
 
+                ),
+                  Positioned(
+                   bottom: 10,
+                   height: deviceWidth * 0.05,
+                   child:  PageIndicator(emptyColors: const [Colors.grey,Colors.white],selectedColors: const [  Colors.lightBlueAccent,
+                    Color.fromRGBO(5, 17, 143, 1.0)],selectedIndex:  curentPage  ,dotSize: deviceWidth * 0.05,itemsLength: pTest.images.length,),
+                 ),
+              ],
             ),
 
           ),
@@ -137,7 +153,7 @@ class _ProductPageContentState extends State<ProductPageContent> {
                   ),
                   SliverToBoxAdapter(
                     child: ProductDescriptionBlock(
-                      blocTitle: ['Color Of Product'],
+                      blocTitle: const ['Color Of Product'],
                       contentTypeEnum: ContentTypeEnum.dropDow,
                       data:
                       pTest.availableColors,
@@ -146,7 +162,7 @@ class _ProductPageContentState extends State<ProductPageContent> {
                   SliverToBoxAdapter(
                     child: ProductDescriptionBlock(
                       data:   [
-                              {'keys' : ['Min Customer value', 'Max Customer Value'], 'values' : [pTest.minPrice, pTest.maxPrice] },
+                              {'keys' : const ['Min Customer value', 'Max Customer Value'], 'values' : [pTest.minPrice, pTest.maxPrice] },
                              ],
                       contentTypeEnum: ContentTypeEnum.maxMinRate,
                       blocTitle: ['Customer Price'],
@@ -191,8 +207,8 @@ class _ProductPageContentState extends State<ProductPageContent> {
      createdAt: DateTime(2022,02,01),
      function: 'dial with it',
      manifacturerLocation: 'Great China',
-     maxPrice: 3400,
-     minPrice: 3250,
+     maxPrice: 3550,
+     minPrice: 3215.00,
      typeOfImportation: 'by sea',
      updatedAt: DateTime.now(),
      whereToUse: 'where people usually use iphones');

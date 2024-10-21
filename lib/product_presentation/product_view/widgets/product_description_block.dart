@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:test_project/product_presentation/product_view/product_view_widgets.dart';
+import 'package:test_project/product_presentation/product_view/widgets/test_dropDown.dart';
 
 enum ContentTypeEnum { valuePairs, dropDow, maxMinRate, plainText }
 
@@ -98,7 +100,7 @@ class ProductDescriptionBlock extends StatelessWidget {
     switch (contentType) {
       case ContentTypeEnum.dropDow:
         return [
-          CustomDropDown(
+          CustomDropDownTextField(
               deviceWidth: deviceWidth,
               initialItemIndex: 0,
               items: data as List<String>)
@@ -138,179 +140,5 @@ class ProductDescriptionBlock extends StatelessWidget {
           )
         ];
     }
-  }
-}
-
-class ValuePairsBlock extends StatelessWidget {
-  final String title;
-  final String value;
-  final double deviceWidth;
-
-  const ValuePairsBlock(
-      {super.key,
-      required this.title,
-      required this.value,
-      required this.deviceWidth});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: deviceWidth * .4,
-              child: Text(
-                '$title :',
-                maxLines: 1,
-                overflow: TextOverflow.fade,
-                style: const TextStyle(fontWeight: FontWeight.w500),
-              ),
-            ),
-            Expanded(
-              child: Text(
-                '$value',
-                maxLines: 2,
-                overflow: TextOverflow.fade,
-                style: const TextStyle(fontWeight: FontWeight.w400),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: deviceWidth * .03,
-        ),
-      ],
-    );
-  }
-}
-
-class CustomDropDown extends StatefulWidget {
-  final double deviceWidth;
-  final List<String> items;
-  final int initialItemIndex;
-
-  const CustomDropDown(
-      {super.key,
-      required this.deviceWidth,
-      required this.initialItemIndex,
-      required this.items});
-
-  @override
-  State<CustomDropDown> createState() => _CustomDropDownState();
-}
-
-class _CustomDropDownState extends State<CustomDropDown> {
-  late String currentValue;
-
-  @override
-  void initState() {
-    currentValue = widget.items[widget.initialItemIndex];
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: Colors.black87),
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: DropdownButton<String>(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              //borderRadius: BorderRadius.circular(30),
-
-              isExpanded: true,
-              menuWidth: widget.deviceWidth,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w700, color: Colors.black),
-              value: currentValue.isNotEmpty ? currentValue : null,
-              icon: const Icon(Icons.arrow_drop_down),
-              items: widget.items
-                  .map((e) => DropdownMenuItem<String>(
-                        value: e,
-                        child: Text(
-                          overflow: TextOverflow.fade,
-                          maxLines: 2,
-                          e,
-                          style: const TextStyle(color: Colors.black),
-                        ),
-                      ))
-                  .toList(),
-              onChanged: (v) {
-                if (v != null) {
-                  setState(() {
-                    currentValue = v;
-                  });
-                }
-              }),
-        ),
-        SizedBox(
-          height: widget.deviceWidth * .03,
-        ),
-      ],
-    );
-  }
-}
-
-class MaxMinRateWidget extends StatelessWidget {
-  final double deviceWidth;
-  final List<String> keys;
-  final List<double> values;
-
-  const MaxMinRateWidget(
-      {super.key,
-      required this.deviceWidth,
-      required this.keys,
-      required this.values});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ...keys.map((e) => Text(
-                  e,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                )),
-          ],
-        ),
-        SizedBox(
-          height: deviceWidth * .03,
-        ),
-        Container(
-          height: deviceWidth * .05,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            gradient: const LinearGradient(
-                colors: [Colors.redAccent, Colors.deepPurpleAccent]),
-          ),
-        ),
-        SizedBox(
-          height: deviceWidth * .03,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ...values.map((e) => Text(
-                  e.toString(),
-                  style: const TextStyle(fontWeight: FontWeight.w400),
-                )),
-          ],
-        ),
-        SizedBox(
-          height: deviceWidth * .03,
-        ),
-      ],
-    );
   }
 }
