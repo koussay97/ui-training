@@ -1,5 +1,8 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test_project/product_presentation/product_bloc/product_bloc.dart';
+import 'package:test_project/product_presentation/product_bloc/product_bloc_utils.dart';
 import 'package:test_project/product_presentation/product_view/product_view_widgets.dart';
 class CustomDropDownTextField extends StatefulWidget {
   final double deviceWidth;
@@ -31,6 +34,8 @@ class _CustomDropDownTextFieldState extends State<CustomDropDownTextField> {
     controller = TextEditingController(text: widget.items[currentIndex]);
     super.initState();
   }
+
+
   @override
   void dispose() {
     _overlayPortalController.hide();
@@ -56,6 +61,9 @@ class _CustomDropDownTextFieldState extends State<CustomDropDownTextField> {
                 width: widget.deviceWidth,
                 child: Center(
                   child: TextField(
+                    onChanged: (value){
+                      context.read<ProductBloc>().add(PrepareOrderEvent(colorVariant: value));
+                    },
                     style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
                     controller: controller,
                     decoration: const InputDecoration(
@@ -85,7 +93,7 @@ class _CustomDropDownTextFieldState extends State<CustomDropDownTextField> {
                 overlayPortalController: _overlayPortalController,
                 btnBackground: Colors.white,
                 btnColor: Colors.teal,
-                dropDownMenuWidth: 300,
+                dropDownMenuWidth: widget.deviceWidth - 20,
 
               ),),
 

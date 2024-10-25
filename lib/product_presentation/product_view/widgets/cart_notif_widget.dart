@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:test_project/product_presentation/orders_bloc/orders_bloc.dart';
+import 'package:test_project/product_presentation/product_bloc/product_bloc.dart';
 
 
 class CartNotificationWidget extends StatelessWidget {
@@ -55,13 +55,13 @@ class CartNotificationWidget extends StatelessWidget {
                   color: Colors.blueAccent,
                   borderRadius: BorderRadius.circular(300),
                 ),
-                /// todo ::: change this bloc to the corresponding cart bloc
-                child: BlocBuilder<OrdersBloc, OrdersState>(
+
+                child: BlocBuilder<ProductBloc, ProductState>(
                     builder: (context, state) {
                   if (state is AddedToCartSuccess) {
                     return Center(
                       child: Text(
-                        '${state.count}',
+                        '${state.globalCount}',
                         style: TextStyle(color: Colors.white,fontSize: deviceWidth * 0.002),
                       ),
                     );

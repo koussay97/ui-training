@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test_project/product_presentation/product_bloc/product_bloc.dart';
 import 'package:test_project/product_presentation/product_model.dart';
 
 import 'product_view_widgets.dart';
@@ -18,20 +20,29 @@ class _ProductPageContentState extends State<ProductPageContent> {
  late CarouselController  carouselController;
  late bool shouldHideActionBtns;
  late int curentPage;
- @override
-  void initState() {
-   curentPage = 0;
-   carouselController = CarouselController( initialItem: 0)..addListener((){
 
-     print('carouselController.offset');
-     //print(carouselController.offset);
+ void carouselListener(){
    setState(() {
      curentPage=(carouselController.offset/MediaQuery.of(context).size.width).ceil();
    });
-   });
+ }
+ @override
+  void initState() {
+   curentPage = 0;
+   carouselController = CarouselController( initialItem: 0)..addListener(carouselListener);
    shouldHideActionBtns=false;
    scrollController= ScrollController(initialScrollOffset: 0.0);
+
+   context.read<ProductBloc>().add(PrepareOrderEvent(product: pTest));
    super.initState();
+
+  }
+  @override
+  void dispose() {
+    scrollController.dispose();
+   carouselController.removeListener(carouselListener);
+   carouselController.dispose();
+   super.dispose();
   }
   @override
   Widget build(BuildContext context) {
@@ -115,9 +126,9 @@ class _ProductPageContentState extends State<ProductPageContent> {
                 ),
                   Positioned(
                    bottom: 10,
-                   height: deviceWidth * 0.05,
+                   height: deviceWidth * 0.04,
                    child:  PageIndicator(emptyColors: const [Colors.grey,Colors.white],selectedColors: const [  Colors.lightBlueAccent,
-                    Color.fromRGBO(5, 17, 143, 1.0)],selectedIndex:  curentPage  ,dotSize: deviceWidth * 0.05,itemsLength: pTest.images.length,),
+                    Color.fromRGBO(5, 17, 143, 1.0)],selectedIndex:  curentPage  ,dotSize: deviceWidth * 0.04,itemsLength: pTest.images.length,),
                  ),
               ],
             ),
@@ -189,7 +200,9 @@ class _ProductPageContentState extends State<ProductPageContent> {
     );
   }
  static Product pTest = Product(
-
+productAddedToFav: false,
+   productCount: 1,
+   productPickedPrice: 0.0,
    categoryDescription: 'decorate your pocket',
    targetGender: 'All Genders',
    name: 'Mighty IPhone 20',
@@ -203,7 +216,7 @@ class _ProductPageContentState extends State<ProductPageContent> {
      id: '34',
      benchMarkName: 'Samsung',
      category: 'smart-phones',
-     color: 'red',
+     currentColor: 'red',
      createdAt: DateTime(2022,02,01),
      function: 'dial with it',
      manifacturerLocation: 'Great China',

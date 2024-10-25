@@ -1,14 +1,20 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:test_project/product_presentation/mock_order_repository.dart';
-import 'package:test_project/product_presentation/orders_bloc/orders_bloc.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:test_project/product_presentation/product_bloc/product_bloc.dart';
 import 'package:test_project/product_presentation/product_model.dart';
 
 import 'package:test_project/product_presentation/product_view/product_page_content.dart';
+import 'package:test_project/repositories/product_repository.dart';
+import 'package:test_project/repositories/product_repository_utils.dart';
+import 'package:test_project/services/cart_service.dart';
+import 'package:test_project/services/favorite_service.dart';
+import 'package:test_project/services/product_service.dart';
 
 class ProductPage extends StatelessWidget {
-  const ProductPage({super.key});
-
+  const  ProductPage({super.key});
+ static Dio dio = Dio();
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as Product?;
@@ -18,15 +24,22 @@ class ProductPage extends StatelessWidget {
           settings: Product(),
           builder: (context,)=>ProductPage()),);
     */
-    return RepositoryProvider<OrderRepository>(
-      create: (context) => OrderRepository(),
+    return RepositoryProvider<IProductRepository>(
+      create: (context) => ProductRepositoryIMPL(
+          productService: MockProductService(dioInstance: dio),
+          cartService: MockCartServiceIMPL(),
+          favoriteService: MockFavoriteServiceIMPL(),
+          networkChecker: NetworkCheckerIMPL(checker: InternetConnection())
+      ),
       child: MultiBlocProvider(
           providers: [
-        BlocProvider<OrdersBloc>(
+        BlocProvider<ProductBloc>(
             create: (context) =>
-                OrdersBloc(repository: context.read<OrderRepository>())),
+                ProductBloc(
+                    productRepository: context.read<IProductRepository>())..add(RegisterStreams())
+        ),
       ],
-          child:  ProductPageContent(
+          child: ProductPageContent(
             product: args,
           )),
     );

@@ -1,6 +1,8 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test_project/product_presentation/product_bloc/product_bloc.dart';
 
 class PaymentUiBloc extends StatelessWidget {
   final double height;
@@ -30,15 +32,25 @@ class PaymentUiBloc extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
               const Text('Total Price: ', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w800 , ),),
-              Text(totalPrice, style: const TextStyle(color: Colors.green, fontWeight: FontWeight.w800 , ),),
+              BlocBuilder<ProductBloc,ProductState>(
+                builder: (context,state) {
+                  if(state is PreparedProductOrderSuccess){
+                    return Text(
+                      '${state.product.productPickedPrice*state.product.productCount} USD', style: const TextStyle(color: Colors.green, fontWeight: FontWeight.w800 , ),);
+                  }
+                  return const Text('--', style: const TextStyle(color: Colors.green, fontWeight: FontWeight.w800 , ),);
+                }
+              ),
             ],
             ),
-          SizedBox(height: 20,),
+          const SizedBox(height: 20,),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
              // FilledButton(deviceWidth:deviceWidth , title: 'Share with your friends',),
-              FilledButton(deviceWidth:deviceWidth , title: 'Share with your friends', onTapFilledBtn: (){ },),
+              FilledButton(deviceWidth:deviceWidth , title: 'Add to cart', onTapFilledBtn: (){
+                context.read<ProductBloc>().add(const AddToCartEvent(userId: '123'));
+              },),
               OutlineButton(deviceWidth:deviceWidth , title: 'Share with your friends',onTapOutlineBtn: (){
 
               },),

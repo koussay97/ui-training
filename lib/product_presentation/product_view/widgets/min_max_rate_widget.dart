@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test_project/product_presentation/product_bloc/product_bloc.dart';
 
 class MaxMinRateWidget extends StatelessWidget {
   final double deviceWidth;
@@ -134,6 +136,13 @@ class _CustomSliderState extends State<CustomSlider> {
                 setState(() {
                   showCursorIndicator = false;
                 });
+                final calculatedRate = calculateRate(
+                    fraction: currentRate,
+                    max: widget.maxVal,
+                    min: widget.minVal);
+                context
+                    .read<ProductBloc>()
+                    .add(PrepareOrderEvent(pickedPrice: calculatedRate));
               },
               onDragStart: (details) {
                 setState(() {
@@ -171,20 +180,20 @@ class _CustomSliderState extends State<CustomSlider> {
 
 double calculateRate(
     {required double fraction, required double min, required double max}) {
-
   if (fraction == 0.0) {
     return min;
   }
-  final res=  ((max - min) * fraction)+min;
-  if (res.remainder(res.floor())<0.25){
+  final res = ((max - min) * fraction) + min;
+  if (res.remainder(res.floor()) < 0.25) {
     return res.floorToDouble();
-  }else if(res.remainder(res.floor())<0.5){
-    return res.truncateToDouble()+0.25;
-} else if (res.remainder(res.floor())<0.6){
+  } else if (res.remainder(res.floor()) < 0.5) {
+    return res.truncateToDouble() + 0.25;
+  } else if (res.remainder(res.floor()) < 0.6) {
     return res.floorToDouble() + 0.5;
-  }else if(res.remainder(res.floor())<0.9){
-    return res.floorToDouble() +0.75;
-  }return res.ceilToDouble();
+  } else if (res.remainder(res.floor()) < 0.9) {
+    return res.floorToDouble() + 0.75;
+  }
+  return res.ceilToDouble();
 }
 
 class MovingCursor extends StatelessWidget {
@@ -291,11 +300,10 @@ class RateIndicator extends StatelessWidget {
                 borderRadius: BorderRadius.circular(rateIndicatorSize * .1),
               ),
               child: Center(
-                child: Text(rateContent, style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600
-
-                ),),
+                child: Text(
+                  rateContent,
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                ),
               ),
             ),
           ],

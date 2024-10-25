@@ -40,6 +40,11 @@ dependencies:
   equatable: ^2.0.5
   result_dart: ^1.1.1
   liquid_progress_indicator: ^0.4.0
+  rxdart: ^0.28.0
+  result_type: ^1.0.0
+  internet_connection_checker_plus: ^2.5.2
+  dio: ^5.7.0
+  path_provider: ^2.1.4
 
 dev_dependencies:
   flutter_test:
